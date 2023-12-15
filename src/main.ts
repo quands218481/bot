@@ -9,11 +9,6 @@ async function bootstrap() {
 
   app.enableCors();
 
-  const bot = app.get(getBotToken());
-  bot.use(session());
-
-  // app.use(bot.webhookCallback('/secret-path'));
-
   await app.listen(process.env.PORT || 3001);
 }
 bootstrap();
