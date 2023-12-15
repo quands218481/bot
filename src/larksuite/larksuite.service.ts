@@ -20,6 +20,7 @@ export class LarkSuiteService {
   private readonly larkClient: lark.Client;
 
   async create(){
+    console.log('service')
     return 1
   }
   
