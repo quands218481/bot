@@ -7,12 +7,12 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class LarkSuiteService {
   constructor(private readonly configService: ConfigService) {
-    this.larkClient = new lark.Client({
-      appId: 'cli_a5f17ef44a78d009',
-      appSecret: 'RAy8RWhtzBeIOz8VNApGahZruHZaN0Fe',
-      appType: lark.AppType.SelfBuild,
-      domain: lark.Domain.Feishu,
-    });
+    // this.larkClient = new lark.Client({
+    //   // appId: 'cli_a5f17ef44a78d009',
+    //   // appSecret: 'RAy8RWhtzBeIOz8VNApGahZruHZaN0Fe',
+    //   // appType: lark.AppType.SelfBuild,
+    //   // domain: lark.Domain.Feishu,
+    // });
   }
 
   private readonly logger = new Logger('LarkSuiteService');
@@ -24,25 +24,25 @@ export class LarkSuiteService {
     return 1
   }
   
-  async getAppInfo() {
-    const token = await this.larkClient.auth.appAccessToken.internal({
-      data: {
-        app_id: 'cli_a5f17ef44a78d009',
-        app_secret: 'RAy8RWhtzBeIOz8VNApGahZruHZaN0Fe',
-      },
-    });
-    console.log(token['tenant_access_token'])
-  this.larkClient.bitable.appTableRecord.list({
-    path: {
-      app_token: 'Gbp3b4Ow3acvOmsG8gjuFcDxsvb',
-      table_id: 'tblmYjnzYNv07o3p'
-    },
-  }, lark.withTenantToken(token['tenant_access_token'])
-  ).then(res => {
-    console.log(res)
-  }).catch(e => e);
-  return;
-    }
+  // async getAppInfo() {
+  //   const token = await this.larkClient.auth.appAccessToken.internal({
+  //     data: {
+  //       app_id: 'cli_a5f17ef44a78d009',
+  //       app_secret: 'RAy8RWhtzBeIOz8VNApGahZruHZaN0Fe',
+  //     },
+  //   });
+  //   console.log(token['tenant_access_token'])
+  // this.larkClient.bitable.appTableRecord.list({
+  //   path: {
+  //     app_token: 'Gbp3b4Ow3acvOmsG8gjuFcDxsvb',
+  //     table_id: 'tblmYjnzYNv07o3p'
+  //   },
+  // }, lark.withTenantToken(token['tenant_access_token'])
+  // ).then(res => {
+  //   console.log(res)
+  // }).catch(e => e);
+  // return;
+  //   }
      
   // async uploadFile(
   //   fileName: string,
