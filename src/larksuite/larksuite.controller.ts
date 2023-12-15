@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { LarkSuiteService } from './larksuite.service';
 
 @Controller('')
@@ -13,8 +13,10 @@ export class LarkSuiteController {
   }
 
   @Post()
-  async create(){
+  async create(@Body() body, @Param()param){
+    console.log(body)
     console.log('automation flow')
+    console.log(param)
     return this.larkService.create()
   }
 
