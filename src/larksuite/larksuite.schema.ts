@@ -9,6 +9,7 @@ export class Larksuite extends Document {
 
   @Prop({
     required: true,
+    type: Object,
   })
   fields: object;
 
