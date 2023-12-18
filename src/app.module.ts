@@ -10,7 +10,7 @@ import { LarkSuiteModule } from './larksuite/larksuite.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(<string>process.env.MONGOOSE_URL),
+    MongooseModule.forRoot('mongodb+srv://admin:6IKdolkCSHPSSyZh@cluster0.s2gdn.mongodb.net/WealifyTest?retryWrites=true&w=majority'),
     // TelegrafModule.forRootAsync({
     //   useFactory: () => ({
     //     botName: <string>process.env.TELEGRAM_OXANON_BOT_NAME,
