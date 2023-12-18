@@ -22,14 +22,14 @@ export class Larksuite extends Document {
   record_id: string
 
   @Prop({
-    required: true
+    // required: true
   })
-  createdAt: Date
+  createdAt?: Date
 
   @Prop({
-    required: true
+    // required: true
   })
-  updatedAt: Date
+  updatedAt?: Date
 
 }
 
