@@ -39,6 +39,7 @@ export class LarkSuiteService {
       },
         // lark.withTenantToken("tenant_access_toekn")
       )
+      console.log('res', res)
       if (res && res.code == 0) {
         await this.larksuiteModel.create(res['data']['record'])
       } else {
