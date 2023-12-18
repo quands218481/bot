@@ -10,22 +10,17 @@ export class Larksuite extends Document {
   @Prop({
     required: true,
   })
-  token: string;
+  fields: object;
 
   @Prop({
     required: true,
   })
-  rate: number;
+  id: string;
 
   @Prop({
     required: true,
   })
-  profit: number;
-
-  @Prop({
-    required: true,
-  })
-  flag: number;
+  record_id: string
 }
 
 export const LarkSuiteSchema = createSchemaForClassWithMethods(Larksuite);

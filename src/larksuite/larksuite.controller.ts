@@ -14,7 +14,6 @@ export class LarkSuiteController {
 
   @Post()
   async create(@Body() body, @Param()param){
-    console.log(body)
     return this.larkService.createRecord(body['record_id'])
   }
 

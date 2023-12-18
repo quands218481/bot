@@ -10,7 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class LarkSuiteService {
   constructor(private readonly configService: ConfigService,
-    @InjectModel(Larksuite.name) private infoModel: Model<Larksuite>,
+    @InjectModel(Larksuite.name) private larksuiteModel: Model<Larksuite>,
   ) {
     this.larkClient = new lark.Client({
       appId: 'cli_a5c27e8d76789009',
@@ -22,11 +22,11 @@ export class LarkSuiteService {
 
   private readonly larkClient: lark.Client;
   async createRecord(record_id) {
-    await this.getRecord(record_id);
+    await this.getRecordAndSave(record_id);
     return 1
   }
 
-  async getRecord(record_id) {
+  async getRecordAndSave(record_id) {
     // const client = new lark.Client({
     //   appId: 'app id',
     //   appSecret: 'app secret',
@@ -42,7 +42,9 @@ export class LarkSuiteService {
       },
       // lark.withTenantToken("tenant_access_toekn")
     )
-    console.log(res)
+    if (res && res.code == 0) {
+      this.larksuiteModel.create(res['data']['record'])
+    }
   return res;
     }
 
