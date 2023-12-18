@@ -1,49 +1,51 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as lark from '@larksuiteoapi/node-sdk';
 import { ConfigService } from '@nestjs/config';
+import { Larksuite } from './larksuite.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 // import * as FormData from 'form-data';
 // import { Duplex } from 'stream';
 
 @Injectable()
 export class LarkSuiteService {
-  constructor(private readonly configService: ConfigService) {
-    // this.larkClient = new lark.Client({
-    //   // appId: 'cli_a5f17ef44a78d009',
-    //   // appSecret: 'RAy8RWhtzBeIOz8VNApGahZruHZaN0Fe',
-    //   // appType: lark.AppType.SelfBuild,
-    //   // domain: lark.Domain.Feishu,
-    // });
+  constructor(private readonly configService: ConfigService,
+    @InjectModel(Larksuite.name) private infoModel: Model<Larksuite>,
+  ) {
+    this.larkClient = new lark.Client({
+      appId: 'cli_a5c27e8d76789009',
+      appSecret: 'ucptiuCEFoWAGD56Hk2uMfdjS3sO3vAc',
+      appType: lark.AppType.SelfBuild,
+      domain: lark.Domain.Feishu,
+    });
   }
-
-  private readonly logger = new Logger('LarkSuiteService');
 
   private readonly larkClient: lark.Client;
-
-  async create(){
-    console.log('service')
+  async createRecord(record_id) {
+    await this.getRecord(record_id);
     return 1
   }
-  
-  // async getAppInfo() {
-  //   const token = await this.larkClient.auth.appAccessToken.internal({
-  //     data: {
-  //       app_id: 'cli_a5f17ef44a78d009',
-  //       app_secret: 'RAy8RWhtzBeIOz8VNApGahZruHZaN0Fe',
-  //     },
-  //   });
-  //   console.log(token['tenant_access_token'])
-  // this.larkClient.bitable.appTableRecord.list({
-  //   path: {
-  //     app_token: 'Gbp3b4Ow3acvOmsG8gjuFcDxsvb',
-  //     table_id: 'tblmYjnzYNv07o3p'
-  //   },
-  // }, lark.withTenantToken(token['tenant_access_token'])
-  // ).then(res => {
-  //   console.log(res)
-  // }).catch(e => e);
-  // return;
-  //   }
-     
+
+  async getRecord(record_id) {
+    // const client = new lark.Client({
+    //   appId: 'app id',
+    //   appSecret: 'app secret',
+    //   disableTokenCache: true
+    // });
+    
+    const res = await this.larkClient.bitable.appTableRecord.get({
+        path: {
+          app_token: 'W3k8bXMvna0piHsvykXuZlHEsZC',
+          table_id: 'tblJyo1vi6MZ1gGe',
+          record_id,
+        },
+      },
+      // lark.withTenantToken("tenant_access_toekn")
+    )
+    console.log(res)
+  return res;
+    }
+
   // async uploadFile(
   //   fileName: string,
   //   file: Express.Multer.File,

@@ -5,19 +5,17 @@ import { LarkSuiteService } from './larksuite.service';
 export class LarkSuiteController {
   constructor(private readonly larkService: LarkSuiteService) {}
 
-  @Get()
-  async get() {
-    console.log('automation -------------------')
-    return this.larkService.create()
+  // @Get()
+  // async get() {
+  //   console.log('automation -------------------')
+  //   return this.larkService.createRecord()
     // return this.larkService.getAppInfo();
-  }
+  // }
 
   @Post()
   async create(@Body() body, @Param()param){
     console.log(body)
-    console.log('automation flow')
-    console.log(param)
-    return this.larkService.create()
+    return this.larkService.createRecord(body['record_id'])
   }
 
 //   @Get('/delete')
