@@ -15,6 +15,7 @@ export class LarkSuiteController {
   @Post()
   async create(@Body() body) {
     try {
+      console.log('body', body);
       if (body && body.record_id) {
         return this.larkService.createNewRecord(body.record_id)
       } else {
