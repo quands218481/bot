@@ -3,10 +3,8 @@ import { Document } from 'mongoose';
 import {createSchemaForClassWithMethods} from '../create-schema';
 
 
-@Schema()
+@Schema({ timestamps: true })
 export class Larksuite extends Document {
-
-
   @Prop({
     required: true,
     type: Object,
@@ -22,6 +20,17 @@ export class Larksuite extends Document {
     required: true,
   })
   record_id: string
+
+  @Prop({
+    required: true
+  })
+  createdAt: Date
+
+  @Prop({
+    required: true
+  })
+  updatedAt: Date
+
 }
 
 export const LarkSuiteSchema = createSchemaForClassWithMethods(Larksuite);

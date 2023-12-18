@@ -1,24 +1,44 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { LarkSuiteService } from './larksuite.service';
 
 @Controller('')
 export class LarkSuiteController {
-  constructor(private readonly larkService: LarkSuiteService) {}
+  constructor(private readonly larkService: LarkSuiteService) { }
 
   // @Get()
   // async get() {
   //   console.log('automation -------------------')
   //   return this.larkService.createRecord()
-    // return this.larkService.getAppInfo();
+  // return this.larkService.getAppInfo();
   // }
 
   @Post()
-  async create(@Body() body, @Param()param){
-    return this.larkService.createRecord(body['record_id'])
+  async create(@Body() body) {
+    try {
+      if (body && body.record_id) {
+        return this.larkService.createNewRecord(body.record_id)
+      } else {
+        throw ('Can not get record_id!!')
+      }
+    } catch (error) {
+      throw error
+    }
   }
 
-//   @Get('/delete')
-//   async deleteAll() {
-//     return this.usersService.delete();
-//   }
+  @Put()
+  async update(@Body() body) {
+    try {
+      if (body && body.record_id) {
+        return this.larkService.updateRecord(body.record_id)
+      } else {
+        throw ('Can not get record_id!!')
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+  //   @Get('/delete')
+  //   async deleteAll() {
+  //     return this.usersService.delete();
+  //   }
 }

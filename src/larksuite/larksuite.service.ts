@@ -13,41 +13,65 @@ export class LarkSuiteService {
     @InjectModel(Larksuite.name) private larksuiteModel: Model<Larksuite>,
   ) {
     this.larkClient = new lark.Client({
-      appId: 'cli_a5c27e8d76789009',
-      appSecret: 'ucptiuCEFoWAGD56Hk2uMfdjS3sO3vAc',
+      appId: process.env.APP_ID,
+      appSecret: process.env.APP_SECRET,
       appType: lark.AppType.SelfBuild,
       domain: lark.Domain.Feishu,
     });
   }
 
   private readonly larkClient: lark.Client;
-  async createRecord(record_id) {
-    await this.getRecordAndSave(record_id);
-    return 1
-  }
 
-  async getRecordAndSave(record_id) {
+  async createNewRecord(record_id) {
     // const client = new lark.Client({
     //   appId: 'app id',
     //   appSecret: 'app secret',
     //   disableTokenCache: true
     // });
-    
-    const res = await this.larkClient.bitable.appTableRecord.get({
+
+    try {
+      const res = await this.larkClient.bitable.appTableRecord.get({
         path: {
           app_token: 'W3k8bXMvna0piHsvykXuZlHEsZC',
           table_id: 'tblJyo1vi6MZ1gGe',
           record_id,
         },
       },
-      // lark.withTenantToken("tenant_access_toekn")
-    )
-    if (res && res.code == 0) {
-      this.larksuiteModel.create(res['data']['record'])
+        // lark.withTenantToken("tenant_access_toekn")
+      )
+      if (res && res.code == 0) {
+        await this.larksuiteModel.create(res['data']['record'])
+      } else {
+        throw ('Request failed!!')
+      }
+      return { result: 1 };
+    } catch (error) {
+      return { result: 0, err: error }
     }
-  return res;
-    }
+  }
 
+  async updateRecord(record_id) {
+    try {
+      const record = await this.larksuiteModel.findOne({ record_id })
+      if (!record) throw ('No record!!')
+      const res = await this.larkClient.bitable.appTableRecord.get({
+        path: {
+          app_token: 'W3k8bXMvna0piHsvykXuZlHEsZC',
+          table_id: 'tblJyo1vi6MZ1gGe',
+          record_id,
+        },
+      })
+      if (res && res.code == 0) {
+        record.fields = res.data.record.fields;
+        await record.save()
+      } else {
+        throw ('Request failed!!')
+      }
+      return { result: 1 }
+    } catch (error) {
+      return { result: 0, err: error }
+    }
+  }
   // async uploadFile(
   //   fileName: string,
   //   file: Express.Multer.File,
