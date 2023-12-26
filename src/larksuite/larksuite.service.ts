@@ -109,7 +109,7 @@ export class LarkSuiteService {
     }
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async cronTopUpTable() {
     try {
       const watch  = await this.watchModel.findOne();
@@ -121,7 +121,6 @@ export class LarkSuiteService {
       } else {
         await this.watchModel.create({lastCronTime, now: Date.now()})
       }
-      console.log(lastCronTime)
       const table_id = process.env.TOPUP_TABLEID;
       const app_token = process.env.TOPUP_APP_TOKEN;
       const newRecords = await this.getNewRecords("", table_id, app_token, lastCronTime);
@@ -164,7 +163,6 @@ export class LarkSuiteService {
                 'content-type': 'application/json'
               }
             })
-          console.log(vacom)
           await this.tableModel.create({ ...table, records: newRecords })
         } else {
           throw ('Request failed')
