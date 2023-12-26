@@ -109,7 +109,7 @@ export class LarkSuiteService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_MINUTE)
   async cronTopUpTable() {
     try {
       const watch  = await this.watchModel.findOne();
