@@ -47,7 +47,6 @@ export class LarkSuiteService {
       const table_id = process.env.WITHDRAW_TABLEID;
       const app_token = process.env.WITHDRAW_APP_TOKEN;
       const newRecords = await this.getNewRecords("", table_id, app_token, lastCronTime);
-      console.log(newRecords)
       if (!newRecords || !newRecords[0]) {
         throw ('No new record!!')
       }
@@ -126,6 +125,7 @@ export class LarkSuiteService {
       const table_id = process.env.TOPUP_TABLEID;
       const app_token = process.env.TOPUP_APP_TOKEN;
       const newRecords = await this.getNewRecords("", table_id, app_token, lastCronTime);
+      console.log(newRecords)
       if (!newRecords || !newRecords[0]) {
         throw ('No new record!!')
       }
