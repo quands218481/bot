@@ -11,35 +11,8 @@ export class LarkSuiteController {
   //   return this.larkService.createRecord()
   // return this.larkService.getAppInfo();
   // }
-
-  @Post()
-  async create(@Body() body) {
-    try {
-      console.log('body', body);
-      if (body && body.record_id) {
-        return this.larkService.createNewRecord(body.record_id)
-      } else {
-        throw ('Can not get record_id!!')
-      }
-    } catch (error) {
-      throw error
-    }
+  @Get()
+  async get() {
+    return this.larkService.cronTopUpTable()
   }
-
-  @Put()
-  async update(@Body() body) {
-    try {
-      if (body && body.record_id) {
-        return this.larkService.updateRecord(body.record_id)
-      } else {
-        throw ('Can not get record_id!!')
-      }
-    } catch (error) {
-      throw error
-    }
-  }
-  //   @Get('/delete')
-  //   async deleteAll() {
-  //     return this.usersService.delete();
-  //   }
 }

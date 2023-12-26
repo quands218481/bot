@@ -2,24 +2,25 @@ import { Prop, Schema } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {createSchemaForClassWithMethods} from '../create-schema';
 
-
 @Schema({ timestamps: true })
-export class Larksuite extends Document {
+export class Table extends Document {
   @Prop({
     required: true,
-    type: Object,
   })
-  fields: object;
+  revision: number;
 
   @Prop({
     required: true,
   })
-  id: string;
+  name: string;
 
   @Prop({
     required: true,
   })
-  record_id: string
+  table_id: string
+
+  @Prop({type: Array<any>})
+  records: any[]
 
   @Prop({
     // required: true
@@ -33,4 +34,4 @@ export class Larksuite extends Document {
 
 }
 
-export const LarkSuiteSchema = createSchemaForClassWithMethods(Larksuite);
+export const TableSchema = createSchemaForClassWithMethods(Table);

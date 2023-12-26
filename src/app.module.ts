@@ -6,9 +6,11 @@ import { TelegrafModule } from 'nestjs-telegraf';
 // import { JobsModule } from './jobs/jobs.module';
 // import { MessagesModule } from './message/messages.module';
 import { LarkSuiteModule } from './larksuite/larksuite.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGOOSE_URL),
     // TelegrafModule.forRootAsync({
