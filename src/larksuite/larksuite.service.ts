@@ -37,7 +37,7 @@ export class LarkSuiteService {
 
   async cronWithdrawTable() {
     try {
-      // const lastModified = Date.now() - 86400 * 1000
+      const lastModified = Date.now() - 3600 * 1000
       // const now = Date.now()
       // let watch = await this.watchModel.findOne({}).lean()
       // if (!watch) {
@@ -49,7 +49,7 @@ export class LarkSuiteService {
       // await watch.save();
       const table_id = process.env.WITHDRAW_TABLEID;
       const app_token = process.env.WITHDRAW_APP_TOKEN;
-      const newRecords = await this.getNewRecords("", table_id, app_token);
+      const newRecords = await this.getNewRecords("", table_id, app_token, lastModified);
       // const editedRecords = await this.getEditedRecords("", table_id, app_token, watch.lastModified, watch.now);
       const tableInDB = await this.tableModel.findOne({ table_id })
       if (!tableInDB) {
@@ -111,22 +111,22 @@ export class LarkSuiteService {
     }
   }
 
-  // @Cron('* * * * *')
+  @Cron(CronExpression.EVERY_HOUR)
   async cronTopUpTable() {
     try {
-      // const lastModified = Date.now() - 86400 * 1000
-      // const now = Date.now()
-      // let watch = await this.watchModel.findOne({}).lean()
-      // if (!watch) {
-      //   watch = await this.watchModel.create({ lastModified: Date.now() - 86400*100, now: Date.now() })
-      // } else {
-      //   watch.lastModified = Date.now() - 86400*1000;
-      //   watch.now = Date.now()
-      // }
-      // await watch.save();
+      const watch  = await this.watchModel.findOne();
+      let lastModified = 0;
+      if (watch) {
+        lastModified = Date.now()-3600*1000
+        watch.lastModified = lastModified;
+        await watch.save()
+      }
       const table_id = process.env.TOPUP_TABLEID;
       const app_token = process.env.TOPUP_APP_TOKEN;
-      const newRecords = await this.getNewRecords("", table_id, app_token);
+      const newRecords = await this.getNewRecords("", table_id, app_token, lastModified);
+      if (!newRecords || !newRecords[0]) {
+        throw ('No new record!!')
+      }
       // const editedRecords = await this.getEditedRecords("", table_id, app_token, watch.lastModified, watch.now);
       const tableInDB = await this.tableModel.findOne({ table_id })
       if (!tableInDB) {
@@ -178,9 +178,7 @@ export class LarkSuiteService {
         //     })
         //   })
         // }
-        if (newRecords.length && newRecords[0]) {
-          tableInDB.records = tableInDB.records.concat(newRecords)
-        }
+        tableInDB.records = tableInDB.records.concat(newRecords)
         await tableInDB.save()
       }
     } catch (error) {
@@ -232,7 +230,7 @@ export class LarkSuiteService {
   }
 
   // áp dụng đệ quy để xử lý hết các case
-  async getNewRecords(page_token, table_id, app_token) {
+  async getNewRecords(page_token, table_id, app_token, lastModified) {
     try {
       // const { yesterday } = await this.watchModel.findOne({})
       let res;
@@ -244,8 +242,8 @@ export class LarkSuiteService {
             table_id,
           },
           params: {
-            page_size: 599,
-            // filter: `currentValue.[Created Time] >= ${lastModified}`
+            page_size: 499,
+            filter: `currentValue.[Created Time] >= ${lastModified}`
           }
         })
       } else {
@@ -257,7 +255,7 @@ export class LarkSuiteService {
           params: {
             page_size: 499,
             page_token,
-            // filter: `currentValue.[Created Time] >=${lastModified}`
+            filter: `currentValue.[Created Time] >=${lastModified}`
           }
         })
       }
@@ -266,7 +264,7 @@ export class LarkSuiteService {
         if (!res.data.has_more) {
           return items
         } else {
-          return items.concat(await this.getNewRecords(res.data.page_token, table_id, app_token))
+          return items.concat(await this.getNewRecords(res.data.page_token, table_id, app_token, lastModified))
         }
       } else {
         throw ('Request failed!!')
@@ -290,7 +288,7 @@ export class LarkSuiteService {
       newDatum["SO_CT"] = `PNK/${datum["record_id"]}`
       newDatum["DIEN_GIAI"] = datum["TransactionID(auto)"]
       newDatum["SO_PX"] = datum["TransactionID(auto)"]
-      newDatum["MA_NT"]= datum["USD"]
+      newDatum["MA_NT"] = datum["USD"]
       newDatum["T_TCK"] = 0;
       newDatum["NGAY_CT"] = new Date(datum["Created"]).toLocaleDateString('vn-VN')
       newDatum['details'] = [
