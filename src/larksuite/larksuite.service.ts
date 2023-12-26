@@ -37,19 +37,19 @@ export class LarkSuiteService {
 
   async cronWithdrawTable() {
     try {
-      const lastModified = Date.now() - 3600 * 1000
-      // const now = Date.now()
-      // let watch = await this.watchModel.findOne({}).lean()
-      // if (!watch) {
-      //   watch = await this.watchModel.create({ lastModified: Date.now() - 86400*100, now: Date.now() })
-      // } else {
-      //   watch.lastModified = Date.now() - 86400*1000;
-      //   watch.now = Date.now()
-      // }
-      // await watch.save();
+      const watch  = await this.watchModel.findOne();
+      let lastCronTime = 0;
+      if (watch) {
+        lastCronTime = Date.now()-3600*1000
+        watch.lastCronTime = lastCronTime;
+        await watch.save()
+      }
       const table_id = process.env.WITHDRAW_TABLEID;
       const app_token = process.env.WITHDRAW_APP_TOKEN;
-      const newRecords = await this.getNewRecords("", table_id, app_token, lastModified);
+      const newRecords = await this.getNewRecords("", table_id, app_token, lastCronTime);
+      if (!newRecords || !newRecords[0]) {
+        throw ('No new record!!')
+      }
       // const editedRecords = await this.getEditedRecords("", table_id, app_token, watch.lastModified, watch.now);
       const tableInDB = await this.tableModel.findOne({ table_id })
       if (!tableInDB) {
@@ -75,7 +75,7 @@ export class LarkSuiteService {
           const token = loginRes.data.token
           const vacom = await axios.post('https://0108768622.vaonline.vn/api/System/Save',
             {
-              "windowid": "WIN00052",
+              "windowid": "WIN0052",
               "editmode": 1,
               "data": newData
             },
@@ -101,9 +101,7 @@ export class LarkSuiteService {
         //     })
         //   })
         // }
-        if (newRecords.length && newRecords[0]) {
-          tableInDB.records = tableInDB.records.concat(newRecords)
-        }
+        tableInDB.records = tableInDB.records.concat(newRecords)
         await tableInDB.save()
       }
     } catch (error) {
@@ -111,19 +109,22 @@ export class LarkSuiteService {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async cronTopUpTable() {
     try {
       const watch  = await this.watchModel.findOne();
-      let lastModified = 0;
+      let lastCronTime = 0;
       if (watch) {
-        lastModified = Date.now()-3600*1000
-        watch.lastModified = lastModified;
+        lastCronTime = Date.now()-3600*1000
+        watch.lastCronTime = lastCronTime;
         await watch.save()
+      } else {
+        await this.watchModel.create({lastCronTime, now: Date.now()})
       }
+      console.log(lastCronTime)
       const table_id = process.env.TOPUP_TABLEID;
       const app_token = process.env.TOPUP_APP_TOKEN;
-      const newRecords = await this.getNewRecords("", table_id, app_token, lastModified);
+      const newRecords = await this.getNewRecords("", table_id, app_token, lastCronTime);
       if (!newRecords || !newRecords[0]) {
         throw ('No new record!!')
       }
@@ -154,7 +155,7 @@ export class LarkSuiteService {
             {
               "windowid": "WIN00049",
               "editmode": 1,
-              "data": newData
+              "data": [newData[0]]
             },
             {
               httpsAgent: this.httpsAgent,
@@ -230,7 +231,7 @@ export class LarkSuiteService {
   }
 
   // áp dụng đệ quy để xử lý hết các case
-  async getNewRecords(page_token, table_id, app_token, lastModified) {
+  async getNewRecords(page_token, table_id, app_token, lastCronTime) {
     try {
       // const { yesterday } = await this.watchModel.findOne({})
       let res;
@@ -243,7 +244,7 @@ export class LarkSuiteService {
           },
           params: {
             page_size: 499,
-            filter: `currentValue.[Created Time] >= ${lastModified}`
+            filter: `currentValue.[Created Time] >= ${lastCronTime}`
           }
         })
       } else {
@@ -255,7 +256,7 @@ export class LarkSuiteService {
           params: {
             page_size: 499,
             page_token,
-            filter: `currentValue.[Created Time] >=${lastModified}`
+            filter: `currentValue.[Created Time] >=${lastCronTime}`
           }
         })
       }
@@ -264,7 +265,7 @@ export class LarkSuiteService {
         if (!res.data.has_more) {
           return items
         } else {
-          return items.concat(await this.getNewRecords(res.data.page_token, table_id, app_token, lastModified))
+          return items.concat(await this.getNewRecords(res.data.page_token, table_id, app_token, lastCronTime))
         }
       } else {
         throw ('Request failed!!')

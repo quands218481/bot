@@ -14,7 +14,7 @@ export class Watch extends Document {
   @Prop({
     required: true,
   })
-  lastModified: Number
+  lastCronTime: Number
 
   @Prop({
     // required: true
