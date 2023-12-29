@@ -3,10 +3,13 @@ import { LarkSuiteService } from './larksuite.service';
 import { ConfigModule } from '@nestjs/config';
 import { LarkSuiteController } from './larksuite.controller';
 import { WatchSchema, Watch } from './watch.schema';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
 import { Table, TableSchema } from './table.schema';
 import { HttpModule } from '@nestjs/axios';
 import { User, UserSchema } from './user.schema';
+import { Record, RecordSchema } from './records.schema';
+import { Connection } from 'mongoose';
+import * as sequence from 'mongoose-sequence'
 
 @Module({
   imports: [ConfigModule,
@@ -15,15 +18,20 @@ import { User, UserSchema } from './user.schema';
       [
         {
           name: Watch.name,
-          schema: WatchSchema,
+          schema: WatchSchema
         },
+    
         {
           name: Table.name,
-          schema: TableSchema,
+          schema: TableSchema
         },
         {
           name: User.name,
-          schema: UserSchema,
+          schema: UserSchema
+        },
+        {
+          name: Record.name,
+          schema: RecordSchema
         },
       ])
   ],
@@ -31,4 +39,4 @@ import { User, UserSchema } from './user.schema';
   controllers: [LarkSuiteController],
   exports: [LarkSuiteService],
 })
-export class LarkSuiteModule {}
+export class LarkSuiteModule { }

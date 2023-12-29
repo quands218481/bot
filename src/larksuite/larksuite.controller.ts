@@ -13,6 +13,11 @@ export class LarkSuiteController {
   // }
   @Get()
   async get() {
-    return this.larkService.cronTopUpTable()
+    return this.larkService.cronLarkRecord()
+  }
+
+  @Post()
+  async post() {
+    return this.larkService.sendRecordsToVacom()
   }
 }
