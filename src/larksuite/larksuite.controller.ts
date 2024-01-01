@@ -11,13 +11,13 @@ export class LarkSuiteController {
   //   return this.larkService.createRecord()
   // return this.larkService.getAppInfo();
   // }
-  @Get()
-  async get() {
-    return this.larkService.cronLarkRecord()
-  }
+  // @Get()
+  // async get() {
+  //   return this.larkService.cronLarkRecord()
+  // }
 
-  @Post()
-  async post() {
-    return this.larkService.sendRecordsToVacom()
-  }
+  // @Post()
+  // async post() {
+  //   return this.larkService.sendRecordsToVacom()
+  // }
 }

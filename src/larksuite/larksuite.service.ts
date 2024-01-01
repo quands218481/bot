@@ -44,92 +44,101 @@ export class LarkSuiteService {
 
 
   // @Cron(CronExpression.EVERY_30_MINUTES_BETWEEN_9AM_AND_6PM)
-  async sendRecordsToVacom() {
-    const WDdata = await this.recordModel.find({ isPushed: false, type: TYPE.WITHDRAW })
-    const savedWDData = this.mapWithdrawFieldFromLarkToVacom(WDdata.map((datum) => {
-      return { ...datum.fields, record_id: datum.record_id }
-    }))
-    const loginRes = await axios.post('https://0108768622.vaonline.vn/api/Account/Login',
-      {
-        "username": "BOT",
-        "pass": "Thehuman@2023",
-        "dvcs": "VP"
-      }, {
-      httpsAgent: this.httpsAgent,
-    });
-    const token = loginRes.data.token
-    await axios.post('https://0108768622.vaonline.vn/api/System/Save',
-      {
-        "windowid": "WIN00052",
-        "editmode": 1,
-        "data": savedWDData
-      },
-      {
-        httpsAgent: this.httpsAgent,
-        headers: {
-          'Authorization': `Bear ${token};VP;2023;vi`,
-          'content-type': 'application/json'
-        }
-      })
-    const WDids = WDdata.map((datum) => datum.id)
-    await this.recordModel.updateMany({ id: { $in: WDids } }, { $set: { isPushed: true } })
-    const data = await this.recordModel.find({ isPushed: false, type: TYPE.TOPUP })
-    const savedData = this.mapTopupFieldFromLarkToVacom(data.map((datum) => {
-      return { ...datum.fields, record_id: datum.record_id }
-    }))
-    await axios.post('https://0108768622.vaonline.vn/api/System/Save',
-      {
-        "windowid": "WIN00049",
-        "editmode": 1,
-        "data": savedData
-      },
-      {
-        httpsAgent: this.httpsAgent,
-        headers: {
-          'Authorization': `Bear ${token};VP;2023;vi`,
-          'content-type': 'application/json'
-        }
-      })
-    const ids = data.map((datum) => datum.id)
-    await this.recordModel.updateMany({ id: { $in: ids } }, { $set: { isPushed: true } })
-
+  @Cron('5,35 * 9-19 * * *')
+  async cron1() {
+    console.log(new Date())
   }
+  // async sendRecordsToVacom() {
+  //   const WDdata = await this.recordModel.find({ isPushed: false, type: TYPE.WITHDRAW })
+  //   const savedWDData = this.mapWithdrawFieldFromLarkToVacom(WDdata.map((datum) => {
+  //     return { ...datum.fields, record_id: datum.record_id }
+  //   }))
+  //   const loginRes = await axios.post('https://0108768622.vaonline.vn/api/Account/Login',
+  //     {
+  //       "username": "BOT",
+  //       "pass": "Thehuman@2023",
+  //       "dvcs": "VP"
+  //     }, {
+  //     httpsAgent: this.httpsAgent,
+  //   });
+  //   const token = loginRes.data.token
+  //   await axios.post('https://0108768622.vaonline.vn/api/System/Save',
+  //     {
+  //       "windowid": "WIN00052",
+  //       "editmode": 1,
+  //       "data": savedWDData
+  //     },
+  //     {
+  //       httpsAgent: this.httpsAgent,
+  //       headers: {
+  //         'Authorization': `Bear ${token};VP;2023;vi`,
+  //         'content-type': 'application/json'
+  //       }
+  //     })
+  //   const WDids = WDdata.map((datum) => datum.id)
+  //   await this.recordModel.updateMany({ id: { $in: WDids } }, { $set: { isPushed: true } })
+  //   const TUData = await this.recordModel.find({ isPushed: false, type: TYPE.TOPUP })
+  //   const savedData = this.mapTopupFieldFromLarkToVacom(TUData.map((datum) => {
+  //     return { ...datum.fields, record_id: datum.record_id }
+  //   }))
+  //   await axios.post('https://0108768622.vaonline.vn/api/System/Save',
+  //     {
+  //       "windowid": "WIN00049",
+  //       "editmode": 1,
+  //       "data": savedData
+  //     },
+  //     {
+  //       httpsAgent: this.httpsAgent,
+  //       headers: {
+  //         'Authorization': `Bear ${token};VP;2023;vi`,
+  //         'content-type': 'application/json'
+  //       }
+  //     })
+  //   const ids = TUData.map((datum) => datum.id)
+  //   await this.recordModel.updateMany({ id: { $in: ids } }, { $set: { isPushed: true } })
 
-  // @Cron(CronExpression.EVERY_10_MINUTES)
-  async cronLarkRecord() {
-    try {
-      const watch = await this.watchModel.findOne();
-      let lastCronTime = 0;
-      if (watch) {
-        lastCronTime = Date.now() - 3600 * 1000
-        watch.lastCronTime = lastCronTime;
-        await watch.save()
-      } else {
-        await this.watchModel.create({ lastCronTime, now: Date.now() })
-      }
-      const topupRecords = await this.getNewRecords("", process.env.TOPUP_TABLEID, process.env.TOPUP_APP_TOKEN, lastCronTime);
+  // }
 
-      const withdrawRecords = await this.getNewRecords("", process.env.WITHDRAW_TABLEID, process.env.WITHDRAW_APP_TOKEN, lastCronTime);
-      if (topupRecords && topupRecords[0]) {
-        const savedTopupData = topupRecords.filter((record) => {
-          return (record.fields["customer_code"] && record["fields"]["MA_NG"])
-        }).map((element) => {
-          return { ...element, isPushed: false, type: TYPE.TOPUP }
-        })
-        await this.recordModel.insertMany(savedTopupData)
-      }
-      if (withdrawRecords && withdrawRecords[0]) {
-        const savedWithdrawData = withdrawRecords.filter((record) => {
-          return (record["fields"]["rate"] && record["fields"]["Client"] && record["fields"]["MA_NG"])
-        }).map((element) => {
-          return { ...element, isPushed: false, type: TYPE.WITHDRAW }
-        })
-        await this.recordModel.insertMany(savedWithdrawData)
-      }
-    } catch (error) {
-      throw(error)
-    }
+  @Cron('0,30 * 9-19 * * *')
+  async cron2() {
+    console.log(new Date())
   }
+  // async cronLarkRecord() {
+  //   const now = Date.now()
+  //   try {
+  //     const watch = await this.watchModel.findOne();
+  //     let lastCronTime = 0;
+  //     if (watch) {
+  //       lastCronTime = now - 30*1000
+  //       watch.lastCronTime = lastCronTime;
+  //       watch.now = now;
+  //       await watch.save()
+  //     } else {
+  //       await this.watchModel.create({ lastCronTime: 0, now})
+  //     }
+  //     const topupRecords = await this.getNewRecords("", process.env.TOPUP_TABLEID, process.env.TOPUP_APP_TOKEN, lastCronTime);
+
+  //     const withdrawRecords = await this.getNewRecords("", process.env.WITHDRAW_TABLEID, process.env.WITHDRAW_APP_TOKEN, lastCronTime);
+  //     if (topupRecords && topupRecords[0]) {
+  //       const savedTopupData = topupRecords.filter((record) => {
+  //         return (record.fields["customer_code"] && record["fields"]["MA_NG"])
+  //       }).map((element) => {
+  //         return { ...element, isPushed: false, type: TYPE.TOPUP }
+  //       })
+  //       await this.recordModel.insertMany(savedTopupData)
+  //     }
+  //     if (withdrawRecords && withdrawRecords[0]) {
+  //       const savedWithdrawData = withdrawRecords.filter((record) => {
+  //         return (record["fields"]["rate"] && record["fields"]["Client"] && record["fields"]["MA_NG"])
+  //       }).map((element) => {
+  //         return { ...element, isPushed: false, type: TYPE.WITHDRAW }
+  //       })
+  //       await this.recordModel.insertMany(savedWithdrawData)
+  //     }
+  //   } catch (error) {
+  //     throw(error)
+  //   }
+  // }
 
   async getEditedRecords(page_token, table_id, app_token, lastModified, now) {
     try {
@@ -166,8 +175,6 @@ export class LarkSuiteService {
         } else {
           return items.concat(await this.getEditedRecords(res.data.page_token, table_id, app_token, lastModified, now))
         }
-      } else {
-        throw ('Request failed!!')
       }
     } catch (error) {
       return []
