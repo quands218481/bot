@@ -44,7 +44,7 @@ export class LarkSuiteService {
 
 
   // @Cron(CronExpression.EVERY_30_MINUTES_BETWEEN_9AM_AND_6PM)
-  @Cron('5,35 * 9-19 * * *')
+  @Cron('5,35 0-12 * * *')
   async cron1() {
     console.log(new Date())
   }
@@ -99,7 +99,7 @@ export class LarkSuiteService {
 
   // }
 
-  @Cron('0,30 * 9-19 * * *')
+  @Cron('0,30 0-12 * * *')
   async cron2() {
     console.log(new Date())
   }
