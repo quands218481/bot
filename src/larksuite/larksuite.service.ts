@@ -272,7 +272,7 @@ export class LarkSuiteService {
     const newData = data.map((datum) => {
       const newDatum = {};
       const obj1 = {}
-      if (datum["rate"][0] < 25000) obj1["DVT_CB"] = "USD"
+      if (datum["rate"][0] < 25500) obj1["DVT_CB"] = "USD"
       else obj1["DVT_CB"] = "EUR"
       obj1["LOAI_XB"] = "1"
       obj1["TK_CO2"] = "51113" && (datum["TK_DTHU"] && datum["TK_DTHU"][0] && datum["TK_DTHU"][0].toString())
@@ -289,7 +289,7 @@ export class LarkSuiteService {
       obj1["SO_LUONG"] = 1000 && (datum["quatity"] && datum["quatity"][0])
       obj1["TIEN2"] = obj1["GIA2"] * obj1["SO_LUONG"]
       const obj2 = {}
-      if (obj1["GIA2"] < 25000) obj2["DVT_CB"] = "USD"
+      if (obj1["GIA2"] < 25500) obj2["DVT_CB"] = "USD"
       else obj2["DVT_CB"] = "EUR"
       obj2["LOAI_XB"] = "2"
       obj2["TK_CO2"] = "51113" && (datum["TK_DTHU"] && datum["TK_DTHU"][0] && datum["TK_DTHU"][0].toString())
@@ -360,7 +360,7 @@ export class LarkSuiteService {
       obj["MA_NG_DC"] = "MA_NG" && (datum["MA_NG"] && datum["MA_NG"][0] &&  datum["MA_NG"][0]["text"])
       obj["GIA"] = 24000 && (datum["rate"] && datum["rate"][0])
       obj["SO_LUONG"] = 1000 && datum["Amount(auto)"]
-      if (obj["GIA"] < 25000) obj["DVT_CB"] = "USD"
+      if (obj["GIA"] < 25500) obj["DVT_CB"] = "USD"
       else obj["DVT_CB"] = "EUR"
       newDatum["MA_NT"] = "VND"
       newDatum["TY_GIA"] = 1
