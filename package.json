@@ -36,6 +36,7 @@
     "bcrypt": "^5.1.0",
     "cheerio": "^1.0.0-rc.12",
     "ethers": "^6.6.5",
+    "moment": "^2.30.1",
     "mongoose": "^7.4.0",
     "mongoose-sequence": "^6.0.0",
     "nestjs-telegraf": "^2.6.4",
